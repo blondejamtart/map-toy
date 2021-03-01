@@ -1,6 +1,10 @@
 from matplotlib import pyplot
 import numpy
 
+sz = 101
+hf = 50
+
+# stole this from d3-geo-projections
 def transformPoint(lam, phi):
 	pt = [
 		lam * (0.975534 + phi**2 * (-0.119161 + lam**2 * -0.0143059 + phi**2 * -0.0547009)),
@@ -8,18 +12,20 @@ def transformPoint(lam, phi):
 	]
 	return pt
 
-l = (numpy.array(range(100)) - 50) * numpy.pi * 0.02
-p = (numpy.array(range(100)) - 50) * numpy.pi * 0.01
+# l -> -pi to pi, p -> -pi/2 to pi/2 (polar co-ords on surface)
+l = (numpy.array(range(sz)) - hf) * numpy.pi * (2.0/(sz-1))
+p = (numpy.array(range(sz)) - hf) * numpy.pi * (1.0/(sz-1))
 
-grdX = numpy.zeros((100,100))
-grdY = numpy.zeros((100,100))
+grdX = numpy.zeros((sz,sz))
+grdY = numpy.zeros((sz,sz))
 
-for i in range(100):
-	for j in range(100):
+for i in range(sz):
+	for j in range(sz):
 		grdX[i,j], grdY[i,j] = transformPoint(l[i], p[j])
 
 fig = pyplot.figure()
-for i in range(100):
+for i in range(0,sz, 10):
 	pyplot.plot(grdX[:,i], grdY[:,i])
+	pyplot.plot(grdX[i,:], grdY[i,:])
 
 pyplot.show()
