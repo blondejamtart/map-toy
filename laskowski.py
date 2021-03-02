@@ -1,8 +1,11 @@
 from matplotlib import pyplot
+from PIL import Image
 import numpy
 
 sz = 101
 hf = 50
+
+im = Image.open('/home/falcon/Downloads/wrld-11/mercrator-grey.png')
 
 # stole this from d3-geo-projections
 def transformPoint(lam, phi):
@@ -29,3 +32,5 @@ for i in range(0,sz, 10):
 	pyplot.plot(grdX[i,:], grdY[i,:])
 
 pyplot.show()
+
+merc = numpy.array(im)
