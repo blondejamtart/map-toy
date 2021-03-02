@@ -2,13 +2,15 @@ from matplotlib import pyplot
 from mpl_toolkits.mplot3d import Axes3D 
 
 from PIL import Image
+
+from progress.bar import IncrementalBar
 import numpy
 import math
 
 sz_x = 101
 sz_y = 101
 
-im = Image.open('/home/falcon/Downloads/wrld-11/mercrator-grey.png')
+im = Image.open('/home/falcon/Git/map-toy/mercrator-grey.png')
 merc = numpy.array(im)
 print("Image is %d by %d (by %d)" % merc.shape)
 
@@ -32,11 +34,14 @@ grdX = numpy.zeros((sz_x,sz_y))
 grdY = numpy.zeros((sz_x,sz_y))
 err = numpy.zeros((sz_x,sz_y))
 hitCount = numpy.zeros((sz_x,sz_y))
-reproj = numpy.zeros((sz_x,sz_y))
+reproj = numpy.zeros(merc.shape)
 
+bar = IncrementalBar('Transforming points', max=sz_x)
 for i in range(sz_x):
     for j in range(sz_y):
         grdX[i,j], grdY[i,j] = transformPoint(l[i], p[j])
+    bar.next()
+bar.finish()
 
 xRange = grdX.max() - grdX.min()
 yRange = grdY.max() - grdY.min()
@@ -44,11 +49,14 @@ yRange = grdY.max() - grdY.min()
 grdX = (grdX - grdX.min())*((sz_x-1)/xRange)
 grdY = (grdY - grdY.min())*((sz_y-1)/yRange)
 
+bar = IncrementalBar('Remapping image', max=sz_x)
 for i in range(sz_x):
     for j in range(sz_y):
-        err[i,j] = math.sqrt(abs(grdX[i,j] - round(grdX[i,j]))**2 + abs(grdY[i,j] - round(grdY[i,j]))**2)
-        hitCount[round(grdX[i,j]),round(grdY[i,j])] += 1
-        reproj[round(grdX[i,j]),round(grdY[i,j])]=numpy.sum(merc[round(grdY[i,j]),round(grdX[i,j]),:3])
+        #err[i,j] = math.sqrt(abs(grdX[i,j] - round(grdX[i,j]))**2 + abs(grdY[i,j] - round(grdY[i,j]))**2)
+       # hitCount[round(grdX[i,j]),round(grdY[i,j])] += 1
+        reproj[round(grdY[i,j]),round(grdX[i,j]),:]=merc[j,i,:]
+    bar.next()
+bar.finish()
 
 fig = pyplot.figure()
 #ax = fig.add_subplot(111, projection='3d')
