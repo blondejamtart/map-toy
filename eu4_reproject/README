@@ -1,0 +1,5 @@
+1. Define blocks/split for initial transform (if any)
+2. run .....py 
+3. manually edit seazones along joins to make contiguous
+4. run reproject on map files
+5. run reproject to update positions.txt

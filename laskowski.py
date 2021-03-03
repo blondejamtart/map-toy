@@ -10,9 +10,12 @@ import math
 sz_x = 101
 sz_y = 101
 
-im = Image.open('/home/falcon/Git/map-toy/mercrator-grey.png')
+im = Image.open('/home/falcon/Git/map-toy/miller_cyl_world.png')
 merc = numpy.array(im)
-print("Image is %d by %d (by %d)" % merc.shape)
+
+#old = numpy.array(im)
+#merc[:,:1240,:] = old[:, 760:, :]
+#merc[:,1240:,:] = old[:, :760, :]
 
 sz_x = merc.shape[1]
 sz_y = merc.shape[0]
@@ -34,7 +37,7 @@ grdX = numpy.zeros((sz_x,sz_y))
 grdY = numpy.zeros((sz_x,sz_y))
 err = numpy.zeros((sz_x,sz_y))
 hitCount = numpy.zeros((sz_x,sz_y))
-reproj = numpy.zeros(merc.shape)
+reproj = numpy.zeros(merc.shape, dtype=merc.dtype)
 
 bar = IncrementalBar('Transforming points', max=sz_x)
 for i in range(sz_x):
@@ -49,7 +52,7 @@ yRange = grdY.max() - grdY.min()
 grdX = (grdX - grdX.min())*((sz_x-1)/xRange)
 grdY = (grdY - grdY.min())*((sz_y-1)/yRange)
 
-bar = IncrementalBar('Remapping image', max=sz_x)
+bar = IncrementalBar('Remapping image    ', max=sz_x)
 for i in range(sz_x):
     for j in range(sz_y):
         #err[i,j] = math.sqrt(abs(grdX[i,j] - round(grdX[i,j]))**2 + abs(grdY[i,j] - round(grdY[i,j]))**2)
@@ -73,6 +76,8 @@ pyplot.show()
 #pyplot.imshow(err)
 #pyplot.show()
 #pyplot.imshow(hitCount > 0)
-pyplot.imshow(reproj)
+pyplot.imshow(merc[:,:,0])
+pyplot.show()
+pyplot.imshow(reproj[:,:,0])
 pyplot.show()
 
