@@ -13,9 +13,9 @@ sz_y = 101
 im = Image.open('/home/falcon/Git/map-toy/miller_cyl_world.png')
 merc = numpy.array(im)
 
-#old = numpy.array(im)
-#merc[:,:1240,:] = old[:, 760:, :]
-#merc[:,1240:,:] = old[:, :760, :]
+old = numpy.array(im)
+merc[:,:500,:] = old[:, 1500:, :]
+merc[:,500:,:] = old[:, :1500, :]
 
 sz_x = merc.shape[1]
 sz_y = merc.shape[0]
@@ -56,11 +56,32 @@ bar = IncrementalBar('Remapping image    ', max=sz_x)
 for i in range(sz_x):
     for j in range(sz_y):
         #err[i,j] = math.sqrt(abs(grdX[i,j] - round(grdX[i,j]))**2 + abs(grdY[i,j] - round(grdY[i,j]))**2)
-       # hitCount[round(grdX[i,j]),round(grdY[i,j])] += 1
+        hitCount[round(grdX[i,j]),round(grdY[i,j])] += 1
         reproj[round(grdY[i,j]),round(grdX[i,j]),:]=merc[j,i,:]
     bar.next()
 bar.finish()
 
+misses = 0
+bar = IncrementalBar('Interpolating image', max=sz_x)
+for i in range(sz_x):
+    for j in range(sz_y):
+        if hitCount[i,j] == 0 and 0 < i and i < sz_x-1 and 0 < j and j < sz_y-1 :
+            di = i
+            dj = j
+            if hitCount[i+1,j] != 0:
+                di = i+1
+            elif hitCount[i,j+1] != 0:
+                dj = j+1
+            elif hitCount[i-1,j] != 0:
+                di = i-1
+            elif hitCount[i,j-1] != 0:
+                dj = j-1
+            else:
+                misses += 1
+            reproj[j,i,:]=reproj[dj,di,:]
+    bar.next()
+bar.finish()
+print("%d misses" % misses)
 fig = pyplot.figure()
 #ax = fig.add_subplot(111, projection='3d')
 
